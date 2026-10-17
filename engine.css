@@ -248,16 +248,26 @@ kbd{font-family:var(--f-num);font-size:.74rem;border:1px solid var(--line);borde
 /* 계산 식 틀 */
 .calc{border:1px dashed var(--sky);border-radius:8px;background:var(--bg);padding:12px 14px;display:flex;flex-direction:column;gap:10px}
 .calc .lab{font-size:.74rem;font-weight:700;color:var(--sky);letter-spacing:.04em}
-.fx{overflow-x:auto;padding-bottom:4px}
-.eq{display:inline-flex;align-items:center;flex-wrap:nowrap;gap:4px;font-family:var(--f-num);font-size:1rem;white-space:nowrap;min-width:max-content}
-.eq .op{padding:0 3px;color:var(--ink);font-weight:600}
+.fx{overflow-x:auto;padding:4px 0 6px;display:flex;align-items:center;flex-wrap:nowrap;gap:6px;white-space:nowrap}
+.fx>.op,.fx>.k,.fx>b{flex:none}
+/* 수식: 공학용 계산기(자연 표시)처럼 — 분수는 수식 중심선에 맞추고, 안쪽 분수는 작고 가는 선, 괄호는 내용 높이만큼 */
+.eq{display:inline-flex;align-items:center;flex-wrap:nowrap;gap:3px;font-family:var(--f-num);font-size:1rem;white-space:nowrap;min-width:max-content;line-height:1.25}
+.eq .op{padding:0 4px;color:var(--ink);font-weight:600}
 .eq .k{color:var(--ink)}
-.eq .pa{font-size:1.35em;font-weight:300;color:var(--muted);line-height:1}
-.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px}
-.frac>.fn,.frac>.fd{display:inline-flex;align-items:center;gap:4px;padding:3px 6px}
-.frac>.fn{border-bottom:2px solid var(--ink)}
+.grp{display:inline-flex;align-items:center;gap:3px}
+.eq .pa{font-weight:300;color:var(--muted);line-height:1;font-size:1.3em;transform:translateY(-.04em)}
+.grp.tall>.pa{font-size:2.3em;font-weight:200;transform:scaleX(.7) translateY(-.05em)}
+.frac{display:inline-flex;flex-direction:column;align-items:stretch;vertical-align:middle;margin:0 3px}
+.frac>.fn,.frac>.fd{display:flex;align-items:center;justify-content:center;gap:3px;padding:2px 8px}
+.frac>.fn{border-bottom:2px solid var(--ink);padding-bottom:4px}
+.frac>.fd{padding-top:4px}
+.frac .frac{font-size:.84em;margin:0 1px}
+.frac .frac>.fn{border-bottom-width:1.25px;padding:1px 3px 2px}
+.frac .frac>.fd{padding:2px 3px 1px}
 .pw{display:inline-flex;align-items:flex-start}
-.pw>.pe{display:inline-flex;align-items:center;gap:2px;font-size:.8em;transform:translateY(-.55em);margin-left:1px}
+.pw>.pb{display:inline-flex;align-items:center;gap:3px}
+.pw>.pe{display:inline-flex;align-items:center;gap:2px;font-size:.72em;margin-left:2px;margin-top:-.15em}
+.pe .op{padding:0 1px}
 .slw{display:inline-flex;flex-direction:column;align-items:center;gap:1px}
 .sl{font-family:var(--f-num);font-size:.98rem;font-weight:600;width:7.2ch;min-width:5ch;text-align:center;padding:4px 4px;border:1.5px solid var(--sky);border-radius:5px;background:var(--paper);color:var(--ink)}
 .pe .sl{width:4.6ch;font-size:.82rem;padding:2px}

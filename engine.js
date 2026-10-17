@@ -56,14 +56,14 @@ function tplStr(t,vals){let k=0;const w=a=>a.map(x=>{
   if(x.f)return "(("+w(x.f[0])+")/("+w(x.f[1])+"))";
   if(x.p)return "(("+w(x.p[0])+")^("+w(x.p[1])+"))";
   if(x.g)return "("+w(x.g)+")"}).join("");return w(t)}
-function tplHTML(t,qid,vals,ro,stat){let k=0;const w=a=>a.map(x=>{
+function tplHTML(t,qid,vals,ro,stat){let k=0;const hasF=a=>a.some(x=>x&&typeof x==="object"&&(x.f||(x.g&&hasF(x.g))||(x.p&&(hasF(x.p[0])||hasF(x.p[1])))));const w=a=>a.map(x=>{
   if(typeof x==="string")return /^[+\-×÷]$/.test(x)?'<span class="op">'+(x==="-"?"−":x)+'</span>':'<span class="k">'+esc(x)+'</span>';
   if(x.s){const i=k++,v=vals[i]==null?"":vals[i];
     if(stat)return '<span class="k" style="color:var(--sun);font-weight:700">'+esc(fmtN(v))+'</span>';
     return '<span class="slw"><input class="sl" data-q="'+qid+'" data-i="'+i+'" inputmode="decimal" autocomplete="off" spellcheck="false" value="'+esc(v)+'" aria-label="'+esc(x.s)+'" title="'+esc(x.s)+'"'+(ro?" readonly":"")+'><small>'+esc(x.s)+'</small></span>'}
   if(x.f)return '<span class="frac"><span class="fn">'+w(x.f[0])+'</span><span class="fd">'+w(x.f[1])+'</span></span>';
-  if(x.p)return '<span class="pw">'+w(x.p[0])+'<span class="pe">'+w(x.p[1])+'</span></span>';
-  if(x.g)return '<span class="pa">(</span>'+w(x.g)+'<span class="pa">)</span>'}).join("");return '<span class="eq">'+w(t)+'</span>'}
+  if(x.p)return '<span class="pw"><span class="pb">'+w(x.p[0])+'</span><span class="pe">'+w(x.p[1])+'</span></span>';
+  if(x.g)return '<span class="grp'+(hasF(x.g)?' tall':'')+'"><span class="pa">(</span>'+w(x.g)+'<span class="pa">)</span></span>'}).join("");return '<span class="eq">'+w(t)+'</span>'}
 /* IRR: 0 = −투자비 + Σ CFt/(1+r)^t 를 만족하는 r(%)을 이분법으로 찾음 */
 function irrOf(n){const cf=[-n[0]].concat(n.slice(1)),f=r=>cf.reduce((a,c,t)=>a+c/Math.pow(1+r,t),0);let lo=-0.99,hi=10;if(f(lo)*f(hi)>0)return null;for(let k=0;k<200;k++){const m=(lo+hi)/2;if(f(lo)*f(m)<=0)hi=m;else lo=m}return (lo+hi)/2*100}
 function tplVal(q,vals){if(!vals||vals.length<slotCount(q.tpl))return null;const nums=[];for(let i=0;i<vals.length;i++){const v=calcExpr(vals[i]);if(v==null)return null;nums.push(v)}return q.irr?irrOf(nums):calcExpr(tplStr(q.tpl,nums))}
