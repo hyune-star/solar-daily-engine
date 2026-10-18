@@ -221,6 +221,7 @@ kbd{font-family:var(--f-num);font-size:.74rem;border:1px solid var(--line);borde
 .qlist{display:flex;flex-direction:column;gap:12px;list-style:none;margin:0;padding:0}
 .q{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:14px 18px;display:flex;flex-direction:column;gap:10px;scroll-margin-top:150px;min-width:0}
 .q.cur{border-color:var(--sky);box-shadow:0 0 0 1px var(--sky)}
+.q:focus{outline:none}
 .q.ok{border-left:5px solid var(--good)}.q.ng{border-left:5px solid var(--bad)}
 .qh{display:flex;gap:10px;align-items:flex-start}
 .qn{flex:none;font-family:var(--f-num);font-weight:600;font-size:.95rem;color:var(--sun);min-width:2.2em}
