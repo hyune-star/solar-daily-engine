@@ -132,7 +132,7 @@ function renderBody(D,qs){
   $("m-n").textContent=qs.length+"문제";$("m-mc").textContent=qs.filter(q=>q.t==="mc").length;$("m-tx").textContent=qs.filter(q=>q.t==="txt").length;$("m-ca").textContent=qs.filter(q=>q.t==="tp").length;
   let h="";
   D.ord.forEach((qi,n)=>{const q=qs[qi],v=D.ans[q.id],g=D.graded,ok=g&&isRight(q,v);
-    h+='<li class="q'+(g?(ok?" ok":" ng"):"")+'" id="q-'+q.id+'" data-id="'+q.id+'"><div class="qh"><span class="qn">'+(n+1)+'.</span><div class="qt"><span class="stem">'+esc(q.s)+'</span>'+(isR()&&ID[q.id]?'<span class="tag src">'+ID[q.id].set+'종 '+ID[q.id].n+'번</span>':'')+'<span class="tag'+(q.t==="tp"?" c":q.t==="txt"?" t":"")+'">'+(q.t==="mc"?"객관식":q.t==="tp"?"계산":"용어")+'</span>'+(q.g?'<div class="given">'+esc(q.g)+'</div>':'')+'</div><button type="button" class="peek" data-peek="'+q.id+'" title="정답 보기" aria-label="정답 보기" aria-expanded="false">'+PEEK_SVG+'</button>'+(isR()?'<label class="rsel" title="선택해서 재도전에서 빼기"><input type="checkbox" class="rchk" data-id="'+q.id+'" aria-label="'+(n+1)+'번 선택"></label>':'<button type="button" class="pin'+(inRetry(st.lv,q.id)?' on':'')+'" data-pin="'+q.id+'" aria-pressed="'+inRetry(st.lv,q.id)+'" title="'+(inRetry(st.lv,q.id)?'재도전에서 빼기':'재도전에 넣기')+'" aria-label="'+(inRetry(st.lv,q.id)?'재도전에서 빼기':'재도전에 넣기')+'">'+PIN_SVG+'</button>')+'</div><div class="body">';
+    h+='<li class="q'+(g?(ok?" ok":" ng"):"")+'" id="q-'+q.id+'" data-id="'+q.id+'" tabindex="-1"><div class="qh"><span class="qn">'+(n+1)+'.</span><div class="qt"><span class="stem">'+esc(q.s)+'</span>'+(isR()&&ID[q.id]?'<span class="tag src">'+ID[q.id].set+'종 '+ID[q.id].n+'번</span>':'')+'<span class="tag'+(q.t==="tp"?" c":q.t==="txt"?" t":"")+'">'+(q.t==="mc"?"객관식":q.t==="tp"?"계산":"용어")+'</span>'+(q.g?'<div class="given">'+esc(q.g)+'</div>':'')+'</div><button type="button" class="peek" data-peek="'+q.id+'" title="정답 보기" aria-label="정답 보기" aria-expanded="false">'+PEEK_SVG+'</button>'+(isR()?'<label class="rsel" title="선택해서 재도전에서 빼기"><input type="checkbox" class="rchk" data-id="'+q.id+'" aria-label="'+(n+1)+'번 선택"></label>':'<button type="button" class="pin'+(inRetry(st.lv,q.id)?' on':'')+'" data-pin="'+q.id+'" aria-pressed="'+inRetry(st.lv,q.id)+'" title="'+(inRetry(st.lv,q.id)?'재도전에서 빼기':'재도전에 넣기')+'" aria-label="'+(inRetry(st.lv,q.id)?'재도전에서 빼기':'재도전에 넣기')+'">'+PIN_SVG+'</button>')+'</div><div class="body">';
     if(q.t==="mc"){const oo=D.opt[q.id]||seedOrder(q);h+='<div class="opts" role="radiogroup" aria-label="'+(n+1)+'번 보기">';
       oo.forEach((oi,k)=>{const sel=String(v)===String(oi),cls=g?(oi===q.a?" right":sel?" wrong":""):"";
         h+='<label class="opt'+cls+'"><input type="radio" name="r-'+q.id+'" value="'+oi+'"'+(sel?" checked":"")+(g?" disabled":"")+'><span class="mk">'+(k+1)+'</span><span>'+esc(q.o[oi])+'</span></label>'});h+='</div>'}
@@ -286,6 +286,18 @@ document.addEventListener("focusin",e=>{const t=e.target;if(!t.closest||t.closes
     const card=r.closest(".q"),rs=card?[...card.querySelectorAll('input[type="radio"]')]:[];
     if((e.key===" "||e.key==="Delete"||e.key==="Backspace")&&r.checked){e.preventDefault();e.stopPropagation();clearMC(r);return}
     if(/^[1-4]$/.test(e.key)){const t=rs[+e.key-1];if(t&&t.checked){e.preventDefault();e.stopPropagation();clearMC(t);t.focus()}}},true);
+  /* 문제 박스의 여백(보기·입력칸·버튼 밖)을 누르면 그 문제를 선택: 객관식은 박스에 포커스(1~4로 보기 선택), 주관식은 첫 빈칸에 커서 */
+  $("ql").addEventListener("click",e=>{if(e.button!==0)return;const card=e.target.closest(".q");if(!card||card.classList.contains("empty"))return;
+    if(e.target.closest("input,button,label,a,select,textarea,summary,.opt,.slw,.pin,.rsel,.pk-close"))return;
+    try{if(String(window.getSelection()))return}catch(_){}
+    const rs=card.querySelectorAll('input[type="radio"]');
+    if(rs.length){card.focus({preventScroll:true});return}
+    const f=[...card.querySelectorAll("input.sl,input.man,input.txt,input[type=text]")].filter(x=>!x.disabled&&!x.readOnly&&x.offsetParent);
+    const t=f.find(x=>!x.value.trim())||f[0];(t||card).focus({preventScroll:true})});
+  $("ql").addEventListener("keydown",e=>{const card=e.target;if(!card.classList||!card.classList.contains("q"))return;if(e.ctrlKey||e.metaKey||e.altKey)return;
+    if(!/^[1-4]$/.test(e.key))return;const r=card.querySelectorAll('input[type="radio"]')[+e.key-1];if(!r||r.disabled)return;e.preventDefault();
+    if(r.checked)clearMC(r);else{r.checked=true;r.dispatchEvent(new Event("change",{bubbles:true}))}
+    const c=document.getElementById(card.id);if(c)c.focus({preventScroll:true})});
 })();
 $("omr").addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b)goQ(b.dataset.go,true)});
 document.querySelectorAll(".lv button").forEach(b=>b.addEventListener("click",()=>{st.lv=b.dataset.lv;save();render();window.scrollTo({top:0})}));
